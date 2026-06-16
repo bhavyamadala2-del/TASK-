@@ -1,197 +1,485 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            color: #333;
-            padding: 20px;
-        }
+    :root {
+      --bg:        #0E1117;
+      --surface:   #161B27;
+      --panel:     #1E2536;
+      --track:     #252D40;
+      --border:    rgba(255,255,255,0.07);
+      --red:       #E81C23;
+      --text:      #F0F4FF;
+      --muted:     #8A95B0;
+      --radius:    20px;
+    }
 
-        .pokedex {
-            width: min(520px, 100%);
-            background: linear-gradient(135deg, #d62828 0%, #ff4b4b 100%);
-            border: 1px solid rgba(255,255,255,0.24);
-            border-radius: 28px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            color: #fff;
-        }
+    /* TYPE COLORS */
+    .type-fire     { background: #FF7324; color: #fff; }
+    .type-water    { background: #2F9BD8; color: #fff; }
+    .type-grass    { background: #3FA129; color: #fff; }
+    .type-electric { background: #F4C000; color: #1a1a1a; }
+    .type-psychic  { background: #E8426C; color: #fff; }
+    .type-ice      { background: #5ABFDE; color: #fff; }
+    .type-dragon   { background: #4C60C8; color: #fff; }
+    .type-dark     { background: #3D3554; color: #fff; }
+    .type-fairy    { background: #E97EC4; color: #fff; }
+    .type-normal   { background: #9A9A7A; color: #fff; }
+    .type-fighting { background: #C03228; color: #fff; }
+    .type-flying   { background: #7B98E8; color: #fff; }
+    .type-poison   { background: #943FA0; color: #fff; }
+    .type-ground   { background: #D4B05A; color: #fff; }
+    .type-rock     { background: #B8A038; color: #fff; }
+    .type-bug      { background: #90A81A; color: #fff; }
+    .type-ghost    { background: #5A5490; color: #fff; }
+    .type-steel    { background: #96A2B4; color: #fff; }
 
-        .pokedex-header {
-            padding: 28px 28px 18px;
-            background: rgba(255,255,255,0.08);
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-        }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      padding: 24px 16px;
+      background-image: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(232,28,35,0.07) 0%, transparent 70%);
+    }
 
-        .pokedex-header h1 {
-            font-size: 2.5rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
+    .pokedex {
+      width: min(480px, 100%);
+    }
 
-        .search-bar {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+    /* ── HEADER ── */
+    .dex-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
 
-        .search-bar input {
-            flex: 1;
-            min-width: 180px;
-            border: none;
-            border-radius: 16px;
-            padding: 16px 18px;
-            font-size: 1rem;
-            background: rgba(255,255,255,0.16);
-            color: #fff;
-            outline: none;
-        }
+    .dex-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(232,28,35,0.18), 0 0 0 8px rgba(232,28,35,0.06);
+      position: relative;
+    }
+    .dex-dot::after {
+      content: '';
+      position: absolute;
+      top: 8px; left: 8px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
 
-        .search-bar input::placeholder {
-            color: rgba(255,255,255,0.72);
-        }
+    .dex-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
 
-        .search-bar button {
-            border: none;
-            border-radius: 16px;
-            padding: 16px 22px;
-            background: linear-gradient(135deg, #ffcc00 0%, #ff7a18 100%);
-            color: #1f1f1f;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+    /* ── SEARCH ── */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
 
-        .search-bar button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 20px rgba(255, 122, 24, 0.35);
-        }
+    .search-bar input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      padding: 13px 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-bar input:focus {
+      border-color: rgba(232,28,35,0.5);
+      box-shadow: 0 0 0 3px rgba(232,28,35,0.1);
+    }
 
-        .card {
-            padding: 28px;
-            display: grid;
-            gap: 18px;
-        }
+    .search-bar button {
+      background: var(--red);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 13px 20px;
+      text-transform: uppercase;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .search-bar button:hover { opacity: 0.88; transform: translateY(-1px); }
+    .search-bar button:active { transform: translateY(0); }
 
-        .poki-image {
-            display: flex;
-            justify-content: center;
-            background: rgba(3, 3, 3, 0.08);
-            border-radius: 24px;
-            padding: 24px;
-        }
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
 
-        .poki-image img {
-            width: 180px;
-            height: 180px;
-            object-fit: contain;
-            image-rendering: pixelated;
-        }
+    /* pokemon image section */
+    .poke-visual {
+      position: relative;
+      background: var(--panel);
+      padding: 32px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
 
-        .info-group {
-            display: grid;
-            gap: 12px;
-        }
+    .poke-id {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
 
-        .info-group h4,
-        .info-group h5 {
-            padding: 14px 18px;
-            border-radius: 18px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.14);
-        }
+    .poke-img-ring {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+    }
 
-        .info-group h4 {
-            text-transform: capitalize;
-            font-size: 1.5rem;
-        }
+    /* spinning dashed orbit - the one decorative risk */
+    .poke-img-ring::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(232,28,35,0.3);
+      animation: orbit 10s linear infinite;
+    }
+    @keyframes orbit { to { transform: rotate(360deg); } }
 
-        .details-row {
-            display: grid;
-            gap: 12px;
-        }
+    .poke-img-ring img {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+    }
 
-        @media (min-width: 520px) {
-            .details-row {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
+    .poke-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: capitalize;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
 
-        
-    </style>
+    .type-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .type-badge {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    /* ── INFO GRID ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-cell {
+      padding: 16px 14px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .info-cell:last-child { border-right: none; }
+
+    .info-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: capitalize;
+    }
+
+    /* ── STATS ── */
+    .stats-section {
+      padding: 20px 22px 24px;
+    }
+
+    .stats-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 80px 36px 1fr;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+    .stat-row:last-child { margin-bottom: 0; }
+
+    .stat-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .stat-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .stat-track {
+      height: 6px;
+      background: var(--track);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* stat bar colors */
+    .fill-hp      { background: #E84545; }
+    .fill-atk     { background: #F08030; }
+    .fill-def     { background: #4488CC; }
+    .fill-spatk   { background: #9B59B6; }
+    .fill-spdef   { background: #50C878; }
+    .fill-speed   { background: #F4C000; }
+
+    /* ── ERROR ── */
+    .error-msg {
+      padding: 16px 22px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: #FF8A8A;
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-    <div class="pokedex">
-        <div class="pokedex-header">
-            <h1>Pokedex</h1>
-            <div class="search-bar">
-                <input placeholder="Enter Pokemon Name" id="pokiName" />
-                <button onclick="pokidata()">Search</button>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="poki-image">
-                <img src="" id="pokiImg" alt="Pokemon" />
-            </div>
-            <div class="info-group">
-                <h4 id="pokiNameDisplay">Search a Pokemon</h4>
-                <h5 id="HP">HP: -</h5>
-                <h5 id="pokiHeight">Height: -</h5>
-                <h5 id="pokiWeight">Weight: -</h5>
-            </div>
-            <div class="details-row">
-                <h5 id="pokiType">Type: -</h5>
-                <h5 id="pokiAbility">Ability: -</h5>
-                <h5 id="pokiMove">Move: -</h5>
-            </div>
-        </div>
+  <div class="pokedex">
+
+    <div class="dex-header">
+      <div class="dex-dot"></div>
+      <span class="dex-title">Pokédex</span>
     </div>
 
-    <script>
-        async function pokidata(params){
-            try{
-                const name = document.getElementById('pokiName').value.trim().toLowerCase()
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
-                if(!res.ok){
-                    throw new Error('data fetch is failed')
-                }
-                const data = await res.json()
-                console.log(data)
-                const pokisprites = data.sprites.front_default
+    <div class="search-bar">
+      <input id="pokiName" placeholder="Pokémon name or ID…" autocomplete="off" spellcheck="false" />
+      <button onclick="pokidata()">Scan</button>
+    </div>
 
-                const img = document.getElementById('pokiImg')
-                const nameEl = document.getElementById('pokiNameDisplay')
-                img.src=pokisprites
-                nameEl.innerText=data.name
-                document.getElementById('pokiHeight').innerText = `Height: ${data.height*100} cm`
-                document.getElementById('pokiWeight').innerText = `Weight: ${data.weight/10} kg`
-                document.getElementById('pokiType').innerText = `Type: ${data.types[0].type.name}`
-                document.getElementById('pokiAbility').innerText = `Ability: ${data.abilities[0].ability.name}`
-                document.getElementById('pokiMove').innerText = `Move: ${data.moves[0].move.name}`
-                document.getElementById('HP').innerText = `HP: ${data.stats[0].base_stat}`
-            }
-            catch(err){
-                console.error(err)
-            }
+    <div class="card">
+      <!-- Image + name + types -->
+      <div class="poke-visual">
+        <span class="poke-id" id="pokeId">#000</span>
+        <div class="poke-img-ring">
+          <img id="pokiImg" src="" alt="Pokémon sprite" />
+        </div>
+        <div class="poke-name" id="pokiNameDisplay">—</div>
+        <div class="type-row" id="typeRow"></div>
+      </div>
 
-        }
-    </script>
+      <!-- Height / Weight / Ability -->
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">Height</div>
+          <div class="info-value" id="pokiHeight">—</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Weight</div>
+          <div class="info-value" id="pokiWeight">—</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Ability</div>
+          <div class="info-value" id="pokiAbility">—</div>
+        </div>
+      </div>
+
+      <!-- Base stats -->
+      <div class="stats-section">
+        <div class="stats-title">Base Stats</div>
+        <div class="stat-row">
+          <span class="stat-label">HP</span>
+          <span class="stat-num" id="sHP">—</span>
+          <div class="stat-track"><div class="stat-fill fill-hp" id="bHP"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Attack</span>
+          <span class="stat-num" id="sAtk">—</span>
+          <div class="stat-track"><div class="stat-fill fill-atk" id="bAtk"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Defense</span>
+          <span class="stat-num" id="sDef">—</span>
+          <div class="stat-track"><div class="stat-fill fill-def" id="bDef"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Sp. Atk</span>
+          <span class="stat-num" id="sSpAtk">—</span>
+          <div class="stat-track"><div class="stat-fill fill-spatk" id="bSpAtk"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Sp. Def</span>
+          <span class="stat-num" id="sSpDef">—</span>
+          <div class="stat-track"><div class="stat-fill fill-spdef" id="bSpDef"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Speed</span>
+          <span class="stat-num" id="sSpd">—</span>
+          <div class="stat-track"><div class="stat-fill fill-speed" id="bSpd"></div></div>
+        </div>
+      </div>
+
+      <div class="error-msg" id="errMsg">Pokémon not found — try a different name or ID.</div>
+    </div>
+
+  </div>
+
+  <script>
+    const MAX_STAT = 255; // theoretical max for scaling bars
+
+    async function pokidata() {
+      const raw = document.getElementById('pokiName').value.trim().toLowerCase();
+      if (!raw) return;
+
+      const errMsg = document.getElementById('errMsg');
+      errMsg.style.display = 'none';
+
+      // Reset bars instantly
+      ['bHP','bAtk','bDef','bSpAtk','bSpDef','bSpd'].forEach(id => {
+        document.getElementById(id).style.width = '0%';
+      });
+
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${raw}`);
+        if (!res.ok) throw new Error('not found');
+        const d = await res.json();
+
+        // Image & identity
+        document.getElementById('pokiImg').src = d.sprites.front_default || '';
+        document.getElementById('pokiNameDisplay').textContent = d.name;
+        document.getElementById('pokeId').textContent = `#${String(d.id).padStart(3,'0')}`;
+
+        // Types
+        const typeRow = document.getElementById('typeRow');
+        typeRow.innerHTML = '';
+        d.types.forEach(t => {
+          const badge = document.createElement('span');
+          badge.className = `type-badge type-${t.type.name}`;
+          badge.textContent = t.type.name;
+          typeRow.appendChild(badge);
+        });
+
+        // Info cells
+        document.getElementById('pokiHeight').textContent  = `${(d.height * 10)} cm`;
+        document.getElementById('pokiWeight').textContent  = `${(d.weight / 10)} kg`;
+        document.getElementById('pokiAbility').textContent = d.abilities[0].ability.name.replace(/-/g,' ');
+
+        // Stats — map index to element IDs
+        const statMap = [
+          ['sHP',    'bHP'],
+          ['sAtk',   'bAtk'],
+          ['sDef',   'bDef'],
+          ['sSpAtk', 'bSpAtk'],
+          ['sSpDef', 'bSpDef'],
+          ['sSpd',   'bSpd'],
+        ];
+        d.stats.forEach((s, i) => {
+          if (!statMap[i]) return;
+          const [numId, barId] = statMap[i];
+          const val = s.base_stat;
+          document.getElementById(numId).textContent = val;
+          // Delay so CSS transition fires after paint
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            document.getElementById(barId).style.width = `${Math.min((val / MAX_STAT) * 100, 100)}%`;
+          }));
+        });
+
+      } catch {
+        errMsg.style.display = 'block';
+      }
+    }
+
+    document.getElementById('pokiName').addEventListener('keypress', e => {
+      if (e.key === 'Enter') pokidata();
+    });
+  </script>
 </body>
 </html>
